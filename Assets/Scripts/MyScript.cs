@@ -8,6 +8,7 @@ public class MyScript : MonoBehaviour
     void Start()
     {
         // Conflicted line
+        // New comment added
     }
 
     // Update is called once per frame
