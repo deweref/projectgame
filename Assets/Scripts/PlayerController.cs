@@ -10,17 +10,23 @@ public class PlayerController : MonoBehaviour
     public float jumpSpeed = 8f;
     private float direction = 0f;
     private Rigidbody2D player;
+    public float GroundDistance;
 
     public Transform groundCheck;
     public float groundCheckRadius;
     public LayerMask groundLayer;
     private bool isTouchingGround;
 
+
     private Animator playerAnimation;
 
     private Vector3 respawnPoint;
     public GameObject fallDetector;
     public Text scoreText;
+    public GameObject JumpIndicatorPrefab;
+
+    public float CoyoteTime = 0.5f;
+    private float _coyoteTimeCounter = 0;
 
     private int score = 0;
     // Start is called before the first frame update
@@ -29,7 +35,7 @@ public class PlayerController : MonoBehaviour
         player = GetComponent<Rigidbody2D>();
         playerAnimation = GetComponent<Animator>();
         respawnPoint = transform.position;
-        scoreText.text = "Score: " + Scoring.totalScore;
+       
     }
 
     // Update is called once per frame
@@ -63,6 +69,18 @@ public class PlayerController : MonoBehaviour
         playerAnimation.SetBool("OnGround", isTouchingGround);
 
         fallDetector.transform.position = new Vector2(transform.position.x, fallDetector.transform.position.y);
+        {
+            _coyoteTimeCounter -= Time.deltaTime;
+        }
+    }
+
+    private void Jump()
+    {
+        if (_coyoteTimeCounter < 0)
+        {
+            return;
+        }
+        _coyoteTimeCounter = 0;
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -84,11 +102,13 @@ public class PlayerController : MonoBehaviour
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
             respawnPoint = transform.position;  
         }
-        else if(collision.tag == "Crystal")
+        
+        
+    }
+    private void FixedUpdate()
+    {
         {
-            Scoring.totalScore += 1;
-            scoreText.text = "Score: " + Scoring.totalScore;
-            collision.gameObject.SetActive(false);
+            _coyoteTimeCounter = CoyoteTime;
         }
     }
 
